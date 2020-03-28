@@ -24,7 +24,6 @@ Also psychologically pleasing that done group is growing.
 
 * Push code to repository so we all can use it.
 * work places and schools (a kind of routine)
-* teleworking and quarantine
 * set hospital priority for eldery people
 * Implement probability distribution of getting infected vs Distance
 	- Maybe Sigmoid?
