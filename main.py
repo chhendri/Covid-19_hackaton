@@ -9,14 +9,19 @@ import matplotlib.pyplot as plt
 
 
 POPULATION = 100
-PARTICLE_RADIUS = 20
+PARTICLE_RADIUS = 8
 HEIGTH = 400
-WIDTH = 900
+WIDTH = 400
 TRANSMISSION_PROBABILITY = 0.4
 HOSPITAL_CAPACITY = POPULATION*0.2
 INCUBATION_PERIOD = 500
 PROTECTION = 2  # 0: nobody, 1: doctors, 2: doctors and patients, 3: doctors and infected, 4: everybody
 PROTECTION_EFFICIENCY = 0.7
+HOUSE_NUMBER = 10
+HOUSE_RADIUS = 80
+QUARANTINE = True
+
+# TODO set the quarantine when some people get sick
 
 
 def dist(x1, y1, x2=0, y2=0):
@@ -25,14 +30,20 @@ def dist(x1, y1, x2=0, y2=0):
 
 class ParticleSystem(object):
     def __init__(self, pop_size):
-        self.lst_particles = [Particle(0, 20)]
+        self.quarantine = QUARANTINE
+        self.hospital = Hospital(capacity=HOSPITAL_CAPACITY, radius=200)
+
+        self.lst_houses = []
+        for i in range(HOUSE_NUMBER):
+            self.lst_houses.append(House(id=i, pos=((self.hospital.radius+HOUSE_RADIUS+20)*cos(radians(360*i/HOUSE_NUMBER)),
+                                                    (self.hospital.radius+HOUSE_RADIUS+20)*sin(radians(360*i/HOUSE_NUMBER)))))
+
+        self.lst_particles = [Particle(infected=0, age=20, house=random.choice(self.lst_houses))]
         for i in range(1, pop_size):
             if i >= pop_size - HOSPITAL_CAPACITY*2:
-                self.lst_particles.append(Particle(job="doc"))
+                self.lst_particles.append(Particle(house=random.choice(self.lst_houses), job="doc"))
             else:
-                self.lst_particles.append(Particle())
-
-        self.hospital = Hospital(capacity=HOSPITAL_CAPACITY, radius=200)
+                self.lst_particles.append(Particle(house=random.choice(self.lst_houses)))
 
         self.stats = {"healthy": [], "infected": [], "cured": [], "dead": []}
         t.tracer(0, 0)
@@ -58,6 +69,13 @@ class ParticleSystem(object):
                                 * (1-PROTECTION_EFFICIENCY*max(part1.protection, part2.protection)):
                             part1.time_since_infected = max(0, part1.time_since_infected)
                             part2.time_since_infected = max(0, part2.time_since_infected)
+
+                # House and quarantine
+                if self.quarantine and part1.job != "doc" and not part1.hospital:
+                    x1, y1 = part1.pos
+                    x2, y2 = part1.house.pos
+                    if dist(x1, y1, x2, y2) > HOUSE_RADIUS:
+                        part1.dir = (degrees(atan2(y1 - y2, x1 - x2)) + 180) % 360
 
                 # Hospital and stuff
                 if part1.is_sick():
@@ -107,6 +125,8 @@ class ParticleSystem(object):
         t.end_fill()
 
         self.hospital.draw()
+        for house in self.lst_houses:
+            house.draw()
 
         for part in self.lst_particles:
             t.up()
@@ -130,6 +150,21 @@ class ParticleSystem(object):
         part2.dir = (part1.dir + 180) % 360
 
 
+class House(object):
+    def __init__(self, id, pos):
+        self.id = id
+        self.pos = pos
+        self.radius = HOUSE_RADIUS
+
+    def draw(self):
+        t.up()
+        t.goto(self.pos[0], self.pos[1]-self.radius)
+        t.seth(0)
+        t.color("black")
+        t.down()
+        t.circle(self.radius)
+
+
 class Hospital(object):
     def __init__(self, capacity, radius):
         self.capacity = capacity
@@ -148,15 +183,19 @@ class Hospital(object):
 
 
 class Particle(object):
-    def __init__(self, infected=-1, age=-1, job=""):
+    def __init__(self, house, infected=-1, age=-1, job=""):
         # TODO some things are missing here
         self.age = age if age >= 0 else random.randint(0, 100)
         self.job = job
+        self.house = house
         self.alive = True
         self.hospital = False
         self.cured = False
         self.time_since_infected = infected
-        self.pos = (random.randint(-WIDTH, WIDTH), random.randint(-HEIGTH, HEIGTH))
+        x_h, y_h = self.house.pos
+        x_h, y_h = int(x_h), int(y_h)
+        self.pos = (random.randint(x_h-HOUSE_RADIUS, x_h+HOUSE_RADIUS),
+                    random.randint(y_h-HOUSE_RADIUS, y_h+HOUSE_RADIUS))
         self.dir = random.randint(0, 360)
         self.velocity = random.random()*3+2
         self.color = ""
@@ -178,28 +217,28 @@ class Particle(object):
         random_probability = random.random()*100
         # Compute the probabilities of death for each condition
         if 10 <= self.age <= 19:
-            if random_probability <= 0.02*3:
+            if random_probability <= 0.02*5:
                 self.alive = False
         elif 20 <= self.age <= 29:
-            if random_probability <= 0.09*3:
+            if random_probability <= 0.09*5:
                 self.alive = False
         elif 30 <= self.age <= 39:
-            if random_probability <= 0.18*3:
+            if random_probability <= 0.18*5:
                 self.alive = False
         elif 40 <= self.age <= 49:
-            if random_probability <= 0.4*3:
+            if random_probability <= 0.4*5:
                 self.alive = False
         elif 50 <= self.age <= 59:
-            if random_probability <= 1.3*3:
+            if random_probability <= 1.3*5:
                 self.alive = False
         elif 60 <= self.age <= 69:
-            if random_probability <= 4.6*3:
+            if random_probability <= 4.6*5:
                 self.alive = False
         elif 70 <= self.age <= 79:
-            if random_probability <= 9.8*3:
+            if random_probability <= 9.8*5:
                 self.alive = False
         elif self.age >= 80:
-            if random_probability <= 18*3:
+            if random_probability <= 18*5:
                 self.alive = False
 
         if not self.alive:
@@ -227,7 +266,7 @@ class Particle(object):
             lower_limit = 3
             upper_limit = 10
             if self.hospital and \
-                    log10(self.time_since_infected) > lower_limit+random.random()*(upper_limit-lower_limit)-0.1:
+                    log10(self.time_since_infected) > lower_limit+random.random()*(upper_limit-lower_limit)-0.05:
                 self.cured = True
                 self.hospital = False
             if not self.cured and \
