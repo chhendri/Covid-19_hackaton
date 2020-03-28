@@ -30,6 +30,7 @@ Also psychologically pleasing that done group is growing.
 	- Maybe Sigmoid?
 * Representing relations with graph theory?
 * Get more meaningful time related units
+* Use tests to test if people are sick or not
 
 * Set a graphical interface to choose parameters
 
