@@ -21,9 +21,6 @@ Also psychologically pleasing that done group is growing.
 
 
 # Wishlist
-
-* work places and schools (a kind of routine)
-* set hospital priority for eldery people
 * Implement probability distribution of getting infected vs Distance
 	- Maybe Sigmoid?
 	- Chris's note: isn't already modeled using the dot size ?
@@ -34,10 +31,12 @@ Also psychologically pleasing that done group is growing.
 * Set a graphical interface to choose parameters
 * add legends to the turtle plot
 * Prepare the 2 minutes presentation for Monday
+* Implement a times on the op of screen
 
 # Doing
 * Write introduction for the README.md (Charlotte)
-* Implement a times on the op of screen (Jan)
+* TKinter to choose parameters (Jan)
+* work places and schools (a kind of routine) (Delanoe)
 
 # Done
 * Code is uploaded :)
@@ -53,5 +52,6 @@ Also psychologically pleasing that done group is growing.
 * Dead people are still visible but don't collide, don't move and don't transmit the virus
 * Added protections (masks for example), protected people has a lower probability to get or give the virus. We can choose who is protected
 * Houses and quarantine
+* set hospital priority for eldery people
 
 * Collect all the information that has been posted until now and put organise it in repository
