@@ -1,6 +1,6 @@
 """Source:     https://github.com/csamuelsm/covid19-simulations/blob/master/corona.pde   """
 
-
+# IMPORTS ----------------------------------
 import random
 from math import sqrt, cos, sin, atan2, degrees, radians
 import turtle as t
@@ -8,7 +8,8 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 
-POPULATION = 100
+# CONSTANTS --------------------------------
+POPULATION = 200
 PARTICLE_RADIUS = 12
 HEIGTH = 400
 WIDTH = 400
@@ -21,12 +22,15 @@ HOUSE_NUMBER = 10
 HOUSE_RADIUS = 80
 QUARANTINE = False
 QUARANTINE_THRESHOLD = 1
+AGE_THRESHOLD_ELDER = 65 # Threshold to be considered as elder
 
 
+# GLOBAL FUNCTIONS -------------------------
 def dist(x1, y1, x2=0, y2=0):
     return sqrt((x1-x2) ** 2 + (y1-y2) ** 2)
 
 
+# CLASSES ----------------------------------
 class ParticleSystem(object):
     def __init__(self, pop_size):
         self.quarantine = QUARANTINE
@@ -88,7 +92,18 @@ class ParticleSystem(object):
                             part1.dir = (degrees(atan2(part1.pos[1], part1.pos[0]))+180) % 360
                             self.hospital.patients += 1
                     elif not part1.hospital and self.hospital.capacity > self.hospital.patients:
-                        part1.hospital = True
+                        # Condition to prioritize elder people
+                        # Explanation : if the number of infected is above the hospital capacity,
+                        # we keep 20% of the capacity reserved for elder people
+                        # (I don't think hospital push the young patient out when they are already at hospital)
+                        if infected >= self.hospital.capacity:
+                            if self.hospital.patients + int(self.hospital.capacity * 0.2) == self.hospital.capacity:
+                                if part1.age >= AGE_THRESHOLD_ELDER:
+                                    print('Elder guy prioritized')
+                                    part1.hospital = True
+                        else:
+                            # Normal situation
+                            part1.hospital = True
                 if not self.quarantine and not part1.is_sick() and part1.job != "doc" \
                         and dist(*part1.pos) < self.hospital.radius:
                     part1.dir = degrees(atan2(part1.pos[1], part1.pos[0])) % 360
