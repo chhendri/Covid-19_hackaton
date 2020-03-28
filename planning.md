@@ -36,4 +36,14 @@ Also psychologically pleasing that done group is growing.
 * Adding protections (masks for example) (Chris)
 
 # Done
+* Population of 100 (can be changed) in a rectangle area
+* Each collision has a probability of 50% to transmit the virus (can also be changed)
+* There is a hospital in the middle (red circle) with a capacity of 20 patients (20% of the population, can be changed)
+* We begin with a 20-years-old infected, the others have random ages
+* When two people collide, they go away in opposites directions
+* People goes to the hospital when the incubation period is finished and there is room for them
+* Once in the hospital, people heal faster with a lower probability of dying
+* In the initial population, there are 40 doctors that are able to go in the hospital. Other healthy people are not allowed to go inside.
+* Dead people are still visible but don't collide, don't move and don't transmit the virus
+
 * Collect all the information that has been posted until now and put organise it in repository (Jan)
