@@ -22,24 +22,25 @@ Also psychologically pleasing that done group is growing.
 
 # Wishlist
 
-* Push code to repository so we all can use it.
 * work places and schools (a kind of routine)
 * set hospital priority for eldery people
 * Implement probability distribution of getting infected vs Distance
 	- Maybe Sigmoid?
+	- Chris's note: isn't already modeled using the dot size ?
 * Representing relations with graph theory?
 * Get more meaningful time related units
-* Use tests to test if people are sick or not
+* Use tests to test if people are sick or not, relate quarantine and hospitilised people with that
 
 * Set a graphical interface to choose parameters
 * add legends to the turtle plot
 * Prepare the 2 minutes presentation for Monday
 
 # Doing
-* Houses and quarantine (Chris)
 * Write introduction for the README.md (Charlotte)
 
 # Done
+* Code is uploaded :)
+
 * Population of 100 (can be changed) in a rectangle area
 * Each collision has a probability of 50% to transmit the virus (can also be changed)
 * There is a hospital in the middle (red circle) with a capacity of 20 patients (20% of the population, can be changed)
@@ -50,5 +51,6 @@ Also psychologically pleasing that done group is growing.
 * In the initial population, there are 40 doctors that are able to go in the hospital. Other healthy people are not allowed to go inside.
 * Dead people are still visible but don't collide, don't move and don't transmit the virus
 * Added protections (masks for example), protected people has a lower probability to get or give the virus. We can choose who is protected
+* Houses and quarantine
 
 * Collect all the information that has been posted until now and put organise it in repository
