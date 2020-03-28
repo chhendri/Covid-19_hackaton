@@ -29,8 +29,6 @@ Also psychologically pleasing that done group is growing.
 * Implement probability distribution of getting infected vs Distance
 	- Maybe Sigmoid?
 * Representing relations with graph theory?
-* work places and school (routines)
-* teleworking and quarantine
 * Get more meaningful time related units
 
 # Doing
