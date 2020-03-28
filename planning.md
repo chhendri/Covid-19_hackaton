@@ -34,8 +34,8 @@ Also psychologically pleasing that done group is growing.
 * Get more meaningful time related units
 
 # Doing
-* Collect all the information that has been posted until now and put organise it in repository (Jan)
 * Making a house so people can get quarantined (Charlotte) 
 * Adding protections (masks for example) (Chris)
 
 # Done
+* Collect all the information that has been posted until now and put organise it in repository (Jan)
