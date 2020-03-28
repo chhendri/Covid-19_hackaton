@@ -21,7 +21,7 @@ Also psychologically pleasing that done group is growing.
 
 
 # Wishlist
-* Write introduction for the README.md
+
 * Push code to repository so we all can use it.
 * work places and schools (a kind of routine)
 * teleworking and quarantine
@@ -38,6 +38,8 @@ Also psychologically pleasing that done group is growing.
 
 # Doing
 * Houses and quarantine (Chris)
+* Write introduction for the README.md (Charlotte)
+* add legends to the plot (Pierrot)
 
 # Done
 * Population of 100 (can be changed) in a rectangle area
