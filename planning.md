@@ -33,7 +33,6 @@ Also psychologically pleasing that done group is growing.
 
 # Doing
 * Making a house so people can get quarantined (Charlotte) 
-* Adding protections (masks for example) (Chris)
 
 # Done
 * Population of 100 (can be changed) in a rectangle area
@@ -45,5 +44,6 @@ Also psychologically pleasing that done group is growing.
 * Once in the hospital, people heal faster with a lower probability of dying
 * In the initial population, there are 40 doctors that are able to go in the hospital. Other healthy people are not allowed to go inside.
 * Dead people are still visible but don't collide, don't move and don't transmit the virus
+* Added protections (masks for example), protected people has a lower probability to get or give the virus. We can choose who is protected
 
 * Collect all the information that has been posted until now and put organise it in repository (Jan)
