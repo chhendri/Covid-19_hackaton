@@ -31,6 +31,8 @@ Also psychologically pleasing that done group is growing.
 * Representing relations with graph theory?
 * Get more meaningful time related units
 
+* Set a graphical interface to choose parameters
+
 * Prepare the 2 minutes presentation for Monday
 
 # Doing
