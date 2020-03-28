@@ -23,7 +23,16 @@ Also psychologically pleasing that done group is growing.
 # Wishlist
 * Write introduction for the README.md
 * Push code to repository so we all can use it.
+* Implement probability distribution of getting infected vs Distance
+	- Maybe Sigmoid?
+* Representing relations with graph theory?
+* work places and school (routines)
+* teleworking and quarantine
+* Protection (masks, gloves, disinfestation)
+* Get more meaningful time related units
 
 # Doing
+* Collect all the information that has been posted until now and put organise it in repository (Jan)
+* Implement a house (Charlotte)
 
 # Done
