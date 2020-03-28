@@ -33,13 +33,12 @@ Also psychologically pleasing that done group is growing.
 * Use tests to test if people are sick or not
 
 * Set a graphical interface to choose parameters
-
+* add legends to the turtle plot
 * Prepare the 2 minutes presentation for Monday
 
 # Doing
 * Houses and quarantine (Chris)
 * Write introduction for the README.md (Charlotte)
-* add legends to the plot (Pierrot)
 
 # Done
 * Population of 100 (can be changed) in a rectangle area
