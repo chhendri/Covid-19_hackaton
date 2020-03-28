@@ -14,8 +14,8 @@ HEIGTH = 400
 WIDTH = 400
 TRANSMISSION_PROBABILITY = 0.4
 HOSPITAL_CAPACITY = POPULATION*0.1
-INCUBATION_PERIOD = 300
-PROTECTION = 2  # 0: nobody, 1: doctors, 2: doctors and patients, 3: doctors and infected, 4: everybody
+INCUBATION_PERIOD = 200
+PROTECTION = 3  # 0: nobody, 1: doctors, 2: doctors and patients, 3: doctors and infected, 4: everybody
 PROTECTION_EFFICIENCY = 0.8
 HOUSE_NUMBER = 10
 HOUSE_RADIUS = 80
@@ -227,6 +227,8 @@ class Particle(object):
         random_probability = random.random()*100
         if self.hospital:
             random_probability *= 3
+        else:
+            random_probability /= 2
         # Compute the probabilities of death for each condition
         if 10 <= self.age <= 19:
             if random_probability <= 0.02*3:
@@ -274,13 +276,13 @@ class Particle(object):
         self.pos = x, y
         if self.is_contagious():
             self.time_since_infected += 1
-            if self.time_since_infected > 500:
+            if self.time_since_infected > 400:
                 self.death()
                 if self.alive:
                     self.cured = True
                 self.hospital = False
             elif self.time_since_infected > INCUBATION_PERIOD and not self.hospital:
-                self.time_since_infected += 1
+                self.time_since_infected += 2
 
         self.set_color()
 
