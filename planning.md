@@ -32,7 +32,7 @@ Also psychologically pleasing that done group is growing.
 * Get more meaningful time related units
 
 # Doing
-* Making a house so people can get quarantined (Charlotte) 
+
 
 # Done
 * Population of 100 (can be changed) in a rectangle area
