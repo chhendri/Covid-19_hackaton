@@ -1,5 +1,7 @@
 # Covid-19_hackaton
 
-Hello everyone! This is the README!
+Need for some kind of introduction.
 
-This is to test whether other people can push
+## Files
+* Planning.md --> so we can divide tasks more efficiently.
+
