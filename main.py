@@ -165,6 +165,7 @@ class House(object):
         t.goto(self.pos[0], self.pos[1]-self.radius)
         t.seth(0)
         t.color("black")
+        t.fillcolor("#f2938d")
         t.down()
         t.circle(self.radius)
 
@@ -181,9 +182,41 @@ class Hospital(object):
         t.up()
         t.goto(0, -self.radius)
         t.seth(0)
-        t.color("red")
+        t.color("#cc4141")
+        t.fillcolor("#e85d5d")
         t.down()
+        t.begin_fill()
         t.circle(self.radius)
+        t.end_fill()
+        self.draw_H()
+
+    def draw_H(self):
+        height = self.radius/3
+        t.up()
+        t.goto(-height/2, 0)
+        t.seth(90)
+        t.color("#999090")
+        t.fillcolor("white")
+        t.down()
+        t.begin_fill()
+
+        for i in range(2):
+            t.forward(height / 2)
+            t.right(90)
+            t.forward(height/3)
+            t.right(90)
+            t.forward(height/3)
+            t.left(90)
+            t.forward(height/3)
+            t.left(90)
+            t.forward(height/3)
+            t.right(90)
+            t.forward(height/3)
+            t.right(90)
+            t.forward(height/2)
+        t.end_fill()
+
+
 
 
 class Particle(object):
