@@ -6,7 +6,7 @@ from math import sqrt, cos, sin, atan2, degrees, radians
 import turtle as t
 import pandas as pd
 import matplotlib.pyplot as plt
-
+from tkinter import *
 
 POPULATION = 100
 PARTICLE_RADIUS = 12
@@ -303,5 +303,54 @@ class Particle(object):
         return dist(*self.pos, *other.pos) < PARTICLE_RADIUS
 
 
+class Window(Frame):
+
+    def __init__(self, master=None):
+        Frame.__init__(self, master)        
+        self.master = master
+
+        # widget can take all window
+        self.pack(fill=BOTH, expand=1)
+
+        # create button, link it to clickExitButton()
+        exitButton = Button(self, text="Run", command=self.run)
+        exitButton.place(x=0, y=0)
+        
+        # Parameter Labels
+        self.parameters = {
+                "POPULATION": list(),
+                "PARTICLE RADIUS": list(),
+                "HIEGHT": list(),
+                "WIDTH": list(),
+                "TRANSMISSION PROBABILITY": list(),
+                "HOSPITAL CAPACITY": list(),
+                "INCUBATION PERIOD": list(),
+                "PROTECTION": list(),
+                "PROTECTION EFFICIENCY": list(),
+                "HOUSE NUMBERS": list(),
+                "HOUSE RADIUS": list(),
+                "QUARANTINE": list(),   
+                "QUARANTINE THRESHOLD": list()
+                }
+        
+        for i,parameter in enumerate(self.parameters.keys()):
+            self.parameters[parameter].append(Label(self, text=parameter))
+            self.parameters[parameter].append(Entry(self))
+            
+            self.parameters[parameter][0].place(x=150,y=20*(i+2))
+            self.parameters[parameter][1].place(x=0,y=20*(i+2))
+            
+            
+    def run(self):
+        return ParticleSystem(POPULATION)
+    
+root = Tk()
+app = Window(root)
+root.wm_title("Tkinter button")
+root.geometry("320x200")
+root.mainloop()
+
+
 if __name__ == "__main__":
-    sys = ParticleSystem(POPULATION)
+    #sys = ParticleSystem(POPULATION)
+    pass
