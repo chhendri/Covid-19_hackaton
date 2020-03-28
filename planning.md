@@ -31,8 +31,10 @@ Also psychologically pleasing that done group is growing.
 * Representing relations with graph theory?
 * Get more meaningful time related units
 
-# Doing
+* Prepare the 2 minutes presentation for Monday
 
+# Doing
+* Houses and quarantine (Chris)
 
 # Done
 * Population of 100 (can be changed) in a rectangle area
