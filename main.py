@@ -15,11 +15,12 @@ HEIGTH = 400
 WIDTH = 400
 TRANSMISSION_PROBABILITY = 0.4
 HOSPITAL_CAPACITY = POPULATION*0.1
+HOSPITAL_RADIUS = 100
 INCUBATION_PERIOD = 200
 PROTECTION = 3  # 0: nobody, 1: doctors, 2: doctors and patients, 3: doctors and infected, 4: everybody
 PROTECTION_EFFICIENCY = 0.8
-HOUSE_NUMBER = 10
-HOUSE_RADIUS = 80
+HOUSE_NUMBER = 35
+HOUSE_RADIUS = 40
 QUARANTINE = False
 QUARANTINE_THRESHOLD = 1
 AGE_THRESHOLD_ELDER = 65 # Threshold to be considered as elder
@@ -35,12 +36,23 @@ class ParticleSystem(object):
     def __init__(self, pop_size):
         self.quarantine = QUARANTINE
         self.quarantine_start = 0
-        self.hospital = Hospital(capacity=HOSPITAL_CAPACITY, radius=200)
+        self.hospital = Hospital(capacity=HOSPITAL_CAPACITY, radius=HOSPITAL_RADIUS)
+        self.days = 0
+        self.hours = 0
+        self.minutes = 0
+        self.seconds = 0
 
         self.lst_houses = []
+
+        j = 0
+        k= 10
         for i in range(HOUSE_NUMBER):
-            self.lst_houses.append(House(pos=((self.hospital.radius+HOUSE_RADIUS+20)*cos(radians(360*i/HOUSE_NUMBER)),
-                                              (self.hospital.radius+HOUSE_RADIUS+20)*sin(radians(360*i/HOUSE_NUMBER)))))
+            self.lst_houses.append(House(pos=((self.hospital.radius+HOUSE_RADIUS+40*j)*cos(radians(360*(i%k)/k)),
+                                              (self.hospital.radius+HOUSE_RADIUS+40*j)*sin(radians(360*(i%k)/k)))))
+            if i % 10 == 0 and i != 0:
+                j += 2
+                k += 1
+
 
         self.lst_particles = [Particle(infected=0, age=20, house=random.choice(self.lst_houses))]
         for i in range(1, pop_size):
@@ -58,6 +70,7 @@ class ParticleSystem(object):
     def run(self):
         infected = 1
         while infected > 0:
+            self.compute_time()
             healthy, infected, sick, cured, dead = 0, 0, 0, 0, 0
             self.hospital.patients = sum([part.hospital for part in self.lst_particles])
 
@@ -99,7 +112,7 @@ class ParticleSystem(object):
                         if infected >= self.hospital.capacity:
                             if self.hospital.patients + int(self.hospital.capacity * 0.2) == self.hospital.capacity:
                                 if part1.age >= AGE_THRESHOLD_ELDER:
-                                    #print('Elder guy prioritized')
+                                    print('Elder guy prioritized')
                                     part1.hospital = True
                         else:
                             # Normal situation
@@ -125,7 +138,7 @@ class ParticleSystem(object):
                 self.stats["cured"].append(cured)
                 self.stats["dead"].append(dead)
 
-            if not self.quarantine and sick > QUARANTINE_THRESHOLD:
+            if not self.quarantine and sick >= QUARANTINE_THRESHOLD:
                 self.quarantine = True
                 self.quarantine_start = len(self.stats["healthy"])
             self.draw()
@@ -136,6 +149,17 @@ class ParticleSystem(object):
         plt.axvline(self.quarantine_start)
         plt.axhline(HOSPITAL_CAPACITY)
         plt.show()
+
+    def compute_time(self):
+        if self.minutes >= 60:
+            self.minutes = 0
+            self.hours += 1
+            if self.hours >= 24:
+                self.hours = 0
+                self.days += 1
+                print("Time : %s days" % (self.days))
+
+        self.minutes += 45
 
     def draw(self):
         t.clear()
@@ -255,7 +279,7 @@ class Particle(object):
         self.pos = (random.randint(x_h-HOUSE_RADIUS, x_h+HOUSE_RADIUS),
                     random.randint(y_h-HOUSE_RADIUS, y_h+HOUSE_RADIUS))
         self.dir = random.randint(0, 360)
-        self.velocity = random.random()*2+3
+        self.velocity = random.random()*3+3
         self.color = ""
         self.set_color()
         self.protection = 0
