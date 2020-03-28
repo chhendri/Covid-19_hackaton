@@ -34,10 +34,11 @@ Also psychologically pleasing that done group is growing.
 * Set a graphical interface to choose parameters
 * add legends to the turtle plot
 * Prepare the 2 minutes presentation for Monday
+* Implement a times on the op of screen
 
 # Doing
 * Write introduction for the README.md (Charlotte)
-* Implement a times on the op of screen (Jan)
+* TKinter to choose parameters (Jan)
 
 # Done
 * Code is uploaded :)
