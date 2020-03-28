@@ -99,7 +99,7 @@ class ParticleSystem(object):
                         if infected >= self.hospital.capacity:
                             if self.hospital.patients + int(self.hospital.capacity * 0.2) == self.hospital.capacity:
                                 if part1.age >= AGE_THRESHOLD_ELDER:
-                                    print('Elder guy prioritized')
+                                    #print('Elder guy prioritized')
                                     part1.hospital = True
                         else:
                             # Normal situation
