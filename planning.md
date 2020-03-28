@@ -51,4 +51,4 @@ Also psychologically pleasing that done group is growing.
 * Dead people are still visible but don't collide, don't move and don't transmit the virus
 * Added protections (masks for example), protected people has a lower probability to get or give the virus. We can choose who is protected
 
-* Collect all the information that has been posted until now and put organise it in repository (Jan)
+* Collect all the information that has been posted until now and put organise it in repository
