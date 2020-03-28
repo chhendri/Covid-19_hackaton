@@ -215,30 +215,32 @@ class Particle(object):
     def death(self):
         # Random probability, if under this probability, subject dies
         random_probability = random.random()*100
+        if self.hospital:
+            random_probability *= 2
         # Compute the probabilities of death for each condition
         if 10 <= self.age <= 19:
-            if random_probability <= 0.02*5:
+            if random_probability <= 0.02:
                 self.alive = False
         elif 20 <= self.age <= 29:
-            if random_probability <= 0.09*5:
+            if random_probability <= 0.09:
                 self.alive = False
         elif 30 <= self.age <= 39:
-            if random_probability <= 0.18*5:
+            if random_probability <= 0.18:
                 self.alive = False
         elif 40 <= self.age <= 49:
-            if random_probability <= 0.4*5:
+            if random_probability <= 0.4:
                 self.alive = False
         elif 50 <= self.age <= 59:
-            if random_probability <= 1.3*5:
+            if random_probability <= 1.3:
                 self.alive = False
         elif 60 <= self.age <= 69:
-            if random_probability <= 4.6*5:
+            if random_probability <= 4.6:
                 self.alive = False
         elif 70 <= self.age <= 79:
-            if random_probability <= 9.8*5:
+            if random_probability <= 9.8:
                 self.alive = False
         elif self.age >= 80:
-            if random_probability <= 18*5:
+            if random_probability <= 18:
                 self.alive = False
 
         if not self.alive:
