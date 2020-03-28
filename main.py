@@ -388,6 +388,9 @@ class Window(Frame):
             
             
     def run(self):
+        for par in self.parameters:
+            givenValue = self.parameters[par][1].get()
+            print(givenValue)
         return ParticleSystem(POPULATION)
     
 root = Tk()
