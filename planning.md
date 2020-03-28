@@ -26,8 +26,15 @@ Also psychologically pleasing that done group is growing.
 * work places and schools (a kind of routine)
 * teleworking and quarantine
 * set hospital priority for eldery people
+* Implement probability distribution of getting infected vs Distance
+	- Maybe Sigmoid?
+* Representing relations with graph theory?
+* work places and school (routines)
+* teleworking and quarantine
+* Get more meaningful time related units
 
 # Doing
+* Collect all the information that has been posted until now and put organise it in repository (Jan)
 * Making a house so people can get quarantined (Charlotte) 
 * Adding protections (masks for example) (Chris)
 
