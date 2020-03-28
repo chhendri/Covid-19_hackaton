@@ -23,7 +23,6 @@ Also psychologically pleasing that done group is growing.
 # Wishlist
 
 * work places and schools (a kind of routine)
-* set hospital priority for eldery people
 * Implement probability distribution of getting infected vs Distance
 	- Maybe Sigmoid?
 	- Chris's note: isn't already modeled using the dot size ?
@@ -39,6 +38,7 @@ Also psychologically pleasing that done group is growing.
 # Doing
 * Write introduction for the README.md (Charlotte)
 * TKinter to choose parameters (Jan)
+* set hospital priority for eldery people (Delanoe)
 
 # Done
 * Code is uploaded :)
