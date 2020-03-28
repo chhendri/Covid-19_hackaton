@@ -25,5 +25,6 @@ Also psychologically pleasing that done group is growing.
 * Push code to repository so we all can use it.
 
 # Doing
+* Making a house so people can get quarantined (Charlotte) 
 
 # Done
