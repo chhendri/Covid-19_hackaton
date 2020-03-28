@@ -13,13 +13,14 @@ PARTICLE_RADIUS = 12
 HEIGTH = 400
 WIDTH = 400
 TRANSMISSION_PROBABILITY = 0.4
-HOSPITAL_CAPACITY = POPULATION*0.2
-INCUBATION_PERIOD = 500
-PROTECTION = 2  # 0: nobody, 1: doctors, 2: doctors and patients, 3: doctors and infected, 4: everybody
+HOSPITAL_CAPACITY = POPULATION*0.1
+INCUBATION_PERIOD = 200
+PROTECTION = 3  # 0: nobody, 1: doctors, 2: doctors and patients, 3: doctors and infected, 4: everybody
 PROTECTION_EFFICIENCY = 0.8
 HOUSE_NUMBER = 10
 HOUSE_RADIUS = 80
 QUARANTINE = False
+QUARANTINE_THRESHOLD = 1
 
 
 def dist(x1, y1, x2=0, y2=0):
@@ -39,20 +40,21 @@ class ParticleSystem(object):
 
         self.lst_particles = [Particle(infected=0, age=20, house=random.choice(self.lst_houses))]
         for i in range(1, pop_size):
-            if i >= pop_size - HOSPITAL_CAPACITY*2:
+            if i >= pop_size - HOSPITAL_CAPACITY:
                 self.lst_particles.append(Particle(house=random.choice(self.lst_houses), job="doc"))
             else:
                 self.lst_particles.append(Particle(house=random.choice(self.lst_houses)))
 
-        self.stats = {"healthy": [], "infected": [], "cured": [], "dead": []}
+        self.stats = {"healthy": [], "infected": [], "cured": [], "sick": [], "dead": []}
         t.tracer(0, 0)
         t.ht()
         self.run()
         t.done()
 
     def run(self):
-        while sum([part.is_contagious() for part in self.lst_particles]) > 0:
-            healthy, infected, cured, dead = 0, 0, 0, 0
+        infected = 1
+        while infected > 0:
+            healthy, infected, sick, cured, dead = 0, 0, 0, 0, 0
             self.hospital.patients = sum([part.hospital for part in self.lst_particles])
 
             for i in range(len(self.lst_particles)):
@@ -76,9 +78,8 @@ class ParticleSystem(object):
                     if dist(x1, y1, x2, y2) > HOUSE_RADIUS:
                         part1.dir = (degrees(atan2(y1 - y2, x1 - x2)) + 180) % 360
 
-                if not self.quarantine and part1.is_sick():
-                    self.quarantine = True
-                    self.quarantine_start = len(self.stats["healthy"])
+                if part1.is_sick():
+                    sick += 1
 
                 # Hospital and stuff
                 if part1.is_sick():
@@ -105,15 +106,20 @@ class ParticleSystem(object):
 
                 self.stats["healthy"].append(healthy)
                 self.stats["infected"].append(infected)
+                self.stats["sick"].append(sick)
                 self.stats["cured"].append(cured)
                 self.stats["dead"].append(dead)
 
+            if not self.quarantine and sick > QUARANTINE_THRESHOLD:
+                self.quarantine = True
+                self.quarantine_start = len(self.stats["healthy"])
             self.draw()
 
         self.stats = pd.DataFrame(self.stats)
         print(self.stats)
         self.stats.plot.area(stacked=False)
         plt.axvline(self.quarantine_start)
+        plt.axhline(HOSPITAL_CAPACITY)
         plt.show()
 
     def draw(self):
@@ -254,30 +260,32 @@ class Particle(object):
         random_probability = random.random()*100
         if self.hospital:
             random_probability *= 3
+        else:
+            random_probability /= 2
         # Compute the probabilities of death for each condition
         if 10 <= self.age <= 19:
-            if random_probability <= 0.02*2:
+            if random_probability <= 0.02*3:
                 self.alive = False
         elif 20 <= self.age <= 29:
-            if random_probability <= 0.09*2:
+            if random_probability <= 0.09*3:
                 self.alive = False
         elif 30 <= self.age <= 39:
-            if random_probability <= 0.18*2:
+            if random_probability <= 0.18*3:
                 self.alive = False
         elif 40 <= self.age <= 49:
-            if random_probability <= 0.4*2:
+            if random_probability <= 0.4*3:
                 self.alive = False
         elif 50 <= self.age <= 59:
-            if random_probability <= 1.3*2:
+            if random_probability <= 1.3*3:
                 self.alive = False
         elif 60 <= self.age <= 69:
-            if random_probability <= 4.6*2:
+            if random_probability <= 4.6*3:
                 self.alive = False
         elif 70 <= self.age <= 79:
-            if random_probability <= 9.8*2:
+            if random_probability <= 9.8*3:
                 self.alive = False
         elif self.age >= 80:
-            if random_probability <= 18*2:
+            if random_probability <= 18*3:
                 self.alive = False
 
         if not self.alive:
@@ -301,11 +309,13 @@ class Particle(object):
         self.pos = x, y
         if self.is_contagious():
             self.time_since_infected += 1
-            if not self.cured and self.time_since_infected > 800:
+            if self.time_since_infected > 400:
                 self.death()
                 if self.alive:
                     self.cured = True
                 self.hospital = False
+            elif self.time_since_infected > INCUBATION_PERIOD and not self.hospital:
+                self.time_since_infected += 2
 
         self.set_color()
 
