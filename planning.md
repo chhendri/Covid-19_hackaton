@@ -37,6 +37,7 @@ Also psychologically pleasing that done group is growing.
 
 # Doing
 * Write introduction for the README.md (Charlotte)
+* Implement a times on the op of screen (Jan)
 
 # Done
 * Code is uploaded :)
