@@ -7,21 +7,23 @@ import turtle as t
 import pandas as pd
 import matplotlib.pyplot as plt
 from tkinter import *
+from tkinter import font
 
-POPULATION = 100
-PARTICLE_RADIUS = 15
-# size of the screen
-HEIGTH = 400
-WIDTH = 400
-TRANSMISSION_PROBABILITY = 0.4  # Probability of transmission when collision
-HOSPITAL_CAPACITY = POPULATION*0.1  # Number of people that can be healed in the hospital at the same time
-INCUBATION_PERIOD = 200
-PROTECTION = 3  # 0: nobody, 1: doctors, 2: doctors and patients, 3: doctors and infected, 4: everybody
-PROTECTION_EFFICIENCY = 0.8  # if protected, TRANSMISSION_PROBABILITY is multiplied by (1-PROTECTION_EFFICIENCY)
-HOUSE_NUMBER = 10
-HOUSE_RADIUS = 80
-QUARANTINE = False
-QUARANTINE_THRESHOLD = 3  # number of sick people required to start quarantine
+
+d = dict(POPULATION = 100,
+        PARTICLE_RADIUS = 15,
+        # size of the screen
+        HEIGTH = 400,
+        WIDTH = 400,
+        TRANSMISSION_PROBABILITY = 0.4,  # Probability of transmission when collision
+        HOSPITAL_CAPACITY = 100*0.1,  # Number of people that can be healed in the hospital at the same time
+        INCUBATION_PERIOD = 200,
+        PROTECTION = 3,  # 0: nobody, 1: doctors, 2: doctors and patients, 3: doctors and infected, 4: everybody
+        PROTECTION_EFFICIENCY = 0.8,  # if protected, TRANSMISSION_PROBABILITY is multiplied by (1-PROTECTION_EFFICIENCY)
+        HOUSE_NUMBER = 10,
+        HOUSE_RADIUS = 80,
+        QUARANTINE = False,
+        QUARANTINE_THRESHOLD = 3)  # number of sick people required to start quarantine
 
 
 def dist(x1, y1, x2=0, y2=0):
@@ -30,22 +32,22 @@ def dist(x1, y1, x2=0, y2=0):
 
 class ParticleSystem(object):
     def __init__(self, pop_size):
-        self.quarantine = QUARANTINE  # is quarantine set or not ?
+        self.quarantine = d["QUARANTINE"]  # is quarantine set or not ?
         self.quarantine_start = 0  # to remember when the quarantine will (or not) start
-        self.hospital = Hospital(capacity=HOSPITAL_CAPACITY, radius=200)
+        self.hospital = Hospital(capacity=d["HOSPITAL_CAPACITY"], radius=200)
 
         self.lst_houses = []
         # House are added in a circle around the position (0, 0)
-        for i in range(HOUSE_NUMBER):
-            self.lst_houses.append(House(pos=((self.hospital.radius+HOUSE_RADIUS+20)*cos(radians(360*i/HOUSE_NUMBER)),
-                                              (self.hospital.radius+HOUSE_RADIUS+20)*sin(radians(360*i/HOUSE_NUMBER)))))
+        for i in range(d["HOUSE_NUMBER"]):
+            self.lst_houses.append(House(pos=((self.hospital.radius+d["HOUSE_RADIUS"]+20)*cos(radians(360*i/d["HOUSE_NUMBER"])),
+                                              (self.hospital.radius+d["HOUSE_RADIUS"]+20)*sin(radians(360*i/d["HOUSE_NUMBER"])))))
 
         # the first particle is infected and is 20 years old
         #Houses are assigned randomly
         self.lst_particles = [Particle(infected=0, age=20, house=random.choice(self.lst_houses))]
         for i in range(1, pop_size):
             # HOSPITAL_CAPACITY doctors are chosen to be able to go in the hospital and houses
-            if i >= pop_size - HOSPITAL_CAPACITY:
+            if i >= pop_size - d["HOSPITAL_CAPACITY"]:
                 self.lst_particles.append(Particle(house=random.choice(self.lst_houses), job="doc"))
             else:
                 self.lst_particles.append(Particle(house=random.choice(self.lst_houses)))
@@ -75,8 +77,8 @@ class ParticleSystem(object):
                         # Detect collision and update directions
                         ParticleSystem.collision(part1, part2)
                         if (part1.is_contagious() or part2.is_contagious()) \
-                                and random.random() <= TRANSMISSION_PROBABILITY \
-                                * (1-PROTECTION_EFFICIENCY*max(part1.protection, part2.protection)):
+                                and random.random() <= d["TRANSMISSION_PROBABILITY"] \
+                                * (1-d["PROTECTION_EFFICIENCY"]*max(part1.protection, part2.protection)):
                             part1.time_since_infected = max(0, part1.time_since_infected)
                             part2.time_since_infected = max(0, part2.time_since_infected)
 
@@ -86,7 +88,7 @@ class ParticleSystem(object):
                 if self.quarantine and part1.job != "doc" and not part1.hospital:
                     x1, y1 = part1.pos
                     x2, y2 = part1.house.pos
-                    if dist(x1, y1, x2, y2) > HOUSE_RADIUS:
+                    if dist(x1, y1, x2, y2) > d["HOUSE_RADIUS"]:
                         part1.dir = (degrees(atan2(y1 - y2, x1 - x2)) + 180) % 360
 
                 # Hospital and stuff
@@ -131,7 +133,7 @@ class ParticleSystem(object):
             self.stats["dead"].append(dead)
 
             # if quarantine criteria is reached, set up th quarantine (and save the start time)
-            if not self.quarantine and sick >= QUARANTINE_THRESHOLD:
+            if not self.quarantine and sick >= d["QUARANTINE_THRESHOLD"]:
                 self.quarantine = True
                 self.quarantine_start = len(self.stats["healthy"])
 
@@ -145,7 +147,7 @@ class ParticleSystem(object):
         plt.axvline(self.quarantine_start, color="black")
         self.stats.loc[:, ["sick"]].plot.area()
         plt.axvline(self.quarantine_start, color="black")
-        plt.axhline(HOSPITAL_CAPACITY, color="black")
+        plt.axhline(d["HOSPITAL_CAPACITY"], color="black")
         plt.show()
 
     def draw(self):
@@ -153,7 +155,7 @@ class ParticleSystem(object):
         t.clear()
 
         # draw the frontiers
-        w, h = WIDTH+PARTICLE_RADIUS, HEIGTH+PARTICLE_RADIUS
+        w, h = d["WIDTH"]+d["PARTICLE_RADIUS"], d["HEIGTH"]+d["PARTICLE_RADIUS"]
         t.up()
         t.goto(w, h)
         t.down()
@@ -175,12 +177,12 @@ class ParticleSystem(object):
             t.down()
             if part.hospital:
                 t.color("dark orange")
-                t.dot(PARTICLE_RADIUS+7)
+                t.dot(d["PARTICLE_RADIUS"]+7)
             if part.protection == 1:
                 t.color("green")
-                t.dot(PARTICLE_RADIUS+4)
+                t.dot(d["PARTICLE_RADIUS"]+4)
             t.color(part.color)
-            t.dot(PARTICLE_RADIUS)
+            t.dot(d["PARTICLE_RADIUS"])
 
         # update the screen because I've disabled the auto update (it speeds up the drawing)
         t.update()
@@ -197,7 +199,7 @@ class ParticleSystem(object):
 class House(object):
     def __init__(self, pos):
         self.pos = pos
-        self.radius = HOUSE_RADIUS
+        self.radius = d["HOUSE_RADIUS"]
 
     def draw(self):
         t.up()
@@ -237,8 +239,8 @@ class Particle(object):
         # set the particle position in a square centered on its house
         x_h, y_h = self.house.pos
         x_h, y_h = int(x_h), int(y_h)
-        self.pos = (random.randint(x_h-HOUSE_RADIUS, x_h+HOUSE_RADIUS),
-                    random.randint(y_h-HOUSE_RADIUS, y_h+HOUSE_RADIUS))
+        self.pos = (random.randint(x_h-d["HOUSE_RADIUS"], x_h+d["HOUSE_RADIUS"]),
+                    random.randint(y_h-d["HOUSE_RADIUS"], y_h+d["HOUSE_RADIUS"]))
         self.dir = random.randint(0, 360)
         self.velocity = random.random()*2+3  # random speed between 3 and 5
         self.color = ""
@@ -248,10 +250,10 @@ class Particle(object):
 
     def set_protection(self):
         """update the protection depending on the PROTECTION parameter and particle state"""
-        if PROTECTION == 4 \
-                or (PROTECTION == 3 and (self.job == "doc" or self.is_sick())) \
-                or (PROTECTION == 2 and (self.job == "doc" or self.hospital)) \
-                or (PROTECTION == 1 and self.job == "doc"):
+        if d["PROTECTION"] == 4 \
+                or (d["PROTECTION"] == 3 and (self.job == "doc" or self.is_sick())) \
+                or (d["PROTECTION"] == 2 and (self.job == "doc" or self.hospital)) \
+                or (d["PROTECTION"] == 1 and self.job == "doc"):
             self.protection = 1
         else:
             self.protection = 0
@@ -323,7 +325,7 @@ class Particle(object):
                 # as the illness is ended, don't stay in the hospital
                 self.hospital = False
             # if sick and not in a hospital, the illness progresses faster
-            elif self.time_since_infected > INCUBATION_PERIOD and not self.hospital:
+            elif self.time_since_infected > d["INCUBATION_PERIOD"] and not self.hospital:
                 self.time_since_infected += 2
 
         self.set_color()
@@ -334,19 +336,19 @@ class Particle(object):
 
     def is_sick(self):
         """if infected and incubation period is over, is sick"""
-        return self.alive and self.time_since_infected >= INCUBATION_PERIOD and not self.cured
+        return self.alive and self.time_since_infected >= d["INCUBATION_PERIOD"] and not self.cured
 
     def check_boundary_collision(self):
         """update direction after colliding a wall using where incidence angle = reflected angle"""
         x, y = self.pos
-        if (x < -WIDTH and 90 < self.dir < 270) or (x > WIDTH and 90 < (180-self.dir) % 360 < 270):
+        if (x < -d["WIDTH"] and 90 < self.dir < 270) or (x > d["WIDTH"] and 90 < (180-self.dir) % 360 < 270):
             self.dir = (180-self.dir) % 360
-        if (y < -HEIGTH and self.dir > 180) or (y > HEIGTH and self.dir < 180):
+        if (y < -d["HEIGTH"] and self.dir > 180) or (y > d["HEIGTH"] and self.dir < 180):
             self.dir = (-self.dir) % 360
 
     def check_collisions(self, other):
         """return True if other is colliding with self"""
-        return dist(*self.pos, *other.pos) < PARTICLE_RADIUS
+        return dist(*self.pos, *other.pos) < d["PARTICLE_RADIUS"]
 
 
 class Window(Frame):
@@ -358,46 +360,56 @@ class Window(Frame):
         # widget can take all window
         self.pack(fill=BOTH, expand=1)
 
+        #Define the font
+        appHighlightFont = font.Font(family='Arial', size=11)
+        back='#bdc3af'
+        charac='#150b04'
+        self.configure(background=back)
+
         # create button, link it to clickExitButton()
-        exitButton = Button(self, text="Run", command=self.run)
-        exitButton.place(x=0, y=0)
+        runButton = Button(self, text="Run", font=appHighlightFont, command=self.run, bg='green', fg='white')
+        runButton.place(x=0, y=0)
         
         # Parameter Labels
         self.parameters = {
-                "POPULATION": list(),
-                "PARTICLE RADIUS": list(),
-                "HIEGHT": list(),
-                "WIDTH": list(),
-                "TRANSMISSION PROBABILITY": list(),
-                "HOSPITAL CAPACITY": list(),
-                "INCUBATION PERIOD": list(),
-                "PROTECTION": list(),
-                "PROTECTION EFFICIENCY": list(),
-                "HOUSE NUMBERS": list(),
-                "HOUSE RADIUS": list(),
-                "QUARANTINE": list(),   
-                "QUARANTINE THRESHOLD": list()
+                "Population (e.g. 100)": list(),
+                "Particule radius (e.g. 15)": list(),
+                "Height of the window (e.g. 400)": list(),
+                "Width of the window (e.g. 400)": list(),
+                "Transmission probability (e.g. 0.4)": list(),
+                "Hospital capacity (e.g. Population*0.1)": list(),
+                "Incubation period (e.g. 200)": list(),
+                "Protection (0: nobody, 1: doctors, 2: doctors and patients, 3: doctors and infected, 4: everybody)": list(),
+                "Protection efficiency (e.g. 0.8)": list(),
+                "House numbers (e.g. 10)": list(),
+                "House radius (e.g. 80)": list(),
+                "Quarantine (FALSE or TRUE)": list(),   
+                "Quarantine threshold (e.g. 3)": list()
                 }
-        
+
         for i,parameter in enumerate(self.parameters.keys()):
-            self.parameters[parameter].append(Label(self, text=parameter))
+            self.parameters[parameter].append(Label(self, text=parameter, font=appHighlightFont, bg=back, fg=charac))
             self.parameters[parameter].append(Entry(self))
             
-            self.parameters[parameter][0].place(x=150,y=20*(i+2))
-            self.parameters[parameter][1].place(x=0,y=20*(i+2))
+            self.parameters[parameter][0].place(x=150,y=30*(i+2))
+            self.parameters[parameter][1].place(x=0,y=30*(i+2))
             
             
     def run(self):
         for par in self.parameters:
             givenValue = self.parameters[par][1].get()
-            print(givenValue)
-        return ParticleSystem(POPULATION)
+            print(givenValue) #instead put them in a dictionnary and change float and boolean
+            #.get to take the value in the value
+        return ParticleSystem(d["POPULATION"])
     
 root = Tk()
 app = Window(root)
-root.wm_title("Tkinter button")
-root.geometry("320x200")
+root.wm_title("Definition of the Parameters")
+root.geometry("1050x450")
 root.mainloop()
+
+
+
 
 
 if __name__ == "__main__":
