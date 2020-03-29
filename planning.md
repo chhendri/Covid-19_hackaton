@@ -49,3 +49,5 @@ Also psychologically pleasing that done group is growing.
 * Get more meaningful time related units
 * Set a graphical interface to choose parameters
 * Implement a times on the op of screen
+* Audio for the demo video is done
+* Devpost project description is done
