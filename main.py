@@ -11,22 +11,24 @@ from tkinter import font
 
 
 d = dict(
-        POPULATION = 100
-        PARTICLE_RADIUS = 12
-        HEIGTH = 400
-        WIDTH = 400
-        TRANSMISSION_PROBABILITY = 0.4
-        HOSPITAL_CAPACITY = POPULATION*0.1
-        HOSPITAL_RADIUS = 100
-        INCUBATION_PERIOD = 200
-        PROTECTION = 3  # 0: nobody, 1: doctors, 2: doctors and patients, 3: doctors and infected, 4: everybody
-        PROTECTION_EFFICIENCY = 0.8
-        HOUSE_NUMBER = 25
-        HOUSE_RADIUS = 40
-        QUARANTINE = False
-        QUARANTINE_THRESHOLD = 1
-        AGE_THRESHOLD_ELDER = 65 # Threshold to be considered as elder)  # number of sick people required to start quarantine
+        POPULATION = 100,
+        PARTICLE_RADIUS = 12,
+        HEIGTH = 400,
+        WIDTH = 400,
+        TRANSMISSION_PROBABILITY = 0.4,
+        HOSPITAL_CAPACITY = 100*0.1,
+        HOSPITAL_RADIUS = 100,
+        INCUBATION_PERIOD = 200,
+        PROTECTION = 3,  # 0: nobody, 1: doctors, 2: doctors and patients, 3: doctors and infected, 4: everybody
+        PROTECTION_EFFICIENCY = 0.8,
+        HOUSE_NUMBER = 25,
+        HOUSE_RADIUS = 40,
+        QUARANTINE = False,
+        QUARANTINE_THRESHOLD = 1,
+        AGE_THRESHOLD_ELDER = 65, # Threshold to be considered as elder)  # number of sick people required to start quarantine
 )
+
+d['HOSPITAL_CAPACITY'] = d['POPULATION']*0.1
 
 # GLOBAL FUNCTIONS -------------------------
 def dist(x1, y1, x2=0, y2=0):
@@ -47,7 +49,7 @@ class ParticleSystem(object):
         self.lst_houses = []
 
         # House are added in a circle around the position (0, 0)
-        for i in range(HOUSE_NUMBER):
+        for i in range(d['HOUSE_NUMBER']):
             can_add_house = False
 
             while not can_add_house:
@@ -134,7 +136,7 @@ class ParticleSystem(object):
                         # we keep 20% of the capacity reserved for elder people
                         if infected >= self.hospital.capacity:
                             if self.hospital.patients + int(self.hospital.capacity * 0.2) == self.hospital.capacity:
-                                if part1.age >= AGE_THRESHOLD_ELDER:
+                                if part1.age >= d['AGE_THRESHOLD_ELDER']:
                                     print('Elder guy prioritized')
                                     part1.hospital = True
                         else:
@@ -236,7 +238,7 @@ class ParticleSystem(object):
 
         t.up()
         t.color('black')
-        t.goto(-WIDTH / 1.4, HEIGTH / 1.5)
+        t.goto(-d['WIDTH'] / 1.4, d['HEIGTH'] / 1.5)
         t.down()
         t.write("Time : %s days, %s hours" % (self.days, self.hours), align='left',
                 font=("Arial", 20, "normal"))
@@ -501,6 +503,7 @@ class Window(Frame):
         try:
             return ParticleSystem(d["POPULATION"], d)
         except:
+            print('pk la vi')
             self.master.destroy()
             pass
     
