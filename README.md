@@ -73,7 +73,9 @@ The second one shows the number of new infected cases through time. This one all
 
 ## Files
 
-* Planning.md --> to divide tasks more efficiently.
+* main.py --> model
+* model_trad_V1/py --> initial model used to start our project. The original can be found [here](https://github.com/csamuelsm/covid19-simulations/blob/master/corona.pde)
+* Planning.md --> to divide tasks more efficiently
 * Information.md --> Useful links, General information, References
-* chhendri-model-trad --> Python files of the model
+
 
