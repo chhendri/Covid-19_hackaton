@@ -199,7 +199,6 @@ class ParticleSystem(object):
     def compute_time(self):
         self.hours = int(self.minutes/60)
         self.days = int(self.minutes/(24*60))
-
         self.minutes += 120
 
     def draw(self,d):

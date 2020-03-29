@@ -21,22 +21,14 @@ Also psychologically pleasing that done group is growing.
 
 
 # Wishlist
-* Implement probability distribution of getting infected vs Distance
-	- Maybe Sigmoid?
-	- Chris's note: isn't already modeled using the dot size ?
 * Representing relations with graph theory?
-* Get more meaningful time related units
 * Use tests to test if people are sick or not, relate quarantine and hospitilised people with that
-
-* Set a graphical interface to choose parameters
 * add legends to the turtle plot
-* Implement a times on the op of screen
 
 # Doing
 * Write introduction for the README.md (Charlotte)
-* TKinter to choose parameters (Jan)
-* work places and schools (a kind of routine) (Delanoe)
 * Prepare the 2 minutes presentation for Monday (Chris)
+* Coding stuff (Delanoe and Pierrot)
 
 # Done
 * Code is uploaded :)
@@ -53,5 +45,9 @@ Also psychologically pleasing that done group is growing.
 * Added protections (masks for example), protected people has a lower probability to get or give the virus. We can choose who is protected
 * Houses and quarantine
 * set hospital priority for eldery people
-
 * Collect all the information that has been posted until now and put organise it in repository
+* Get more meaningful time related units
+* Set a graphical interface to choose parameters
+* Implement a times on the op of screen
+* Audio for the demo video is done
+* Devpost project description is done
