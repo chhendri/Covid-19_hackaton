@@ -431,8 +431,6 @@ class Window(Frame):
             parameters[key]=value
         return parameters
     
-app = Window(Tk(),d)
 
 if __name__ == "__main__":
-    #app = Window(Tk(),d)
-    pass
+    app = Window(Tk(),d)
