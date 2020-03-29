@@ -10,7 +10,8 @@ from tkinter import *
 from tkinter import font
 
 
-d = dict(POPULATION = 100,
+d = dict(
+        POPULATION = 100,
         PARTICLE_RADIUS = 15,
         # size of the screen
         HEIGTH = 400,
@@ -25,13 +26,12 @@ d = dict(POPULATION = 100,
         QUARANTINE = False,
         QUARANTINE_THRESHOLD = 3)  # number of sick people required to start quarantine
 
-
 def dist(x1, y1, x2=0, y2=0):
     return sqrt((x1-x2) ** 2 + (y1-y2) ** 2)
 
 
 class ParticleSystem(object):
-    def __init__(self, pop_size):
+    def __init__(self, pop_size, d):
         self.quarantine = d["QUARANTINE"]  # is quarantine set or not ?
         self.quarantine_start = 0  # to remember when the quarantine will (or not) start
         self.hospital = Hospital(capacity=d["HOSPITAL_CAPACITY"], radius=200)
@@ -56,10 +56,10 @@ class ParticleSystem(object):
         self.stats = {"healthy": [], "infected": [], "cured": [], "sick": [], "dead": []}
         t.tracer(0, 0)
         t.ht()
-        self.run()
+        self.run(d)
         t.done()
 
-    def run(self):
+    def run(self, d):
         infected = 1
         while infected > 0:
             healthy, infected, sick, cured, dead = 0, 0, 0, 0, 0
@@ -138,7 +138,7 @@ class ParticleSystem(object):
                 self.quarantine_start = len(self.stats["healthy"])
 
             # draw graphics
-            self.draw()
+            self.draw(d)
 
         # print the stats and show the graphes
         self.stats = pd.DataFrame(self.stats)
@@ -150,7 +150,7 @@ class ParticleSystem(object):
         plt.axhline(d["HOSPITAL_CAPACITY"], color="black")
         plt.show()
 
-    def draw(self):
+    def draw(self,d):
         # begin to clear turtle
         t.clear()
 
@@ -166,9 +166,9 @@ class ParticleSystem(object):
         t.end_fill()
 
         # draw hospital and houses
-        self.hospital.draw()
+        self.hospital.draw(d)
         for house in self.lst_houses:
-            house.draw()
+            house.draw(d)
 
         # draw particles
         for part in self.lst_particles:
@@ -201,7 +201,7 @@ class House(object):
         self.pos = pos
         self.radius = d["HOUSE_RADIUS"]
 
-    def draw(self):
+    def draw(self,d):
         t.up()
         t.goto(self.pos[0], self.pos[1]-self.radius)
         t.seth(0)
@@ -217,7 +217,7 @@ class Hospital(object):
         self.radius = radius
         self.pos = 0, 0
 
-    def draw(self):
+    def draw(self,d):
         t.up()
         t.goto(0, -self.radius)
         t.seth(0)
@@ -352,14 +352,23 @@ class Particle(object):
 
 
 class Window(Frame):
-
-    def __init__(self, master=None):
+    def __init__(self, 
+                 master,
+                 parameters,
+                 title="Definition of the Parameters",
+                 geometry="1050x450"):
         Frame.__init__(self, master)        
         self.master = master
 
         # widget can take all window
         self.pack(fill=BOTH, expand=1)
-
+        
+        # Give it a title
+        master.wm_title(title)
+        
+        # Decide the geometry
+        master.geometry(geometry)
+        
         #Define the font
         appHighlightFont = font.Font(family='Arial', size=11)
         back='#bdc3af'
@@ -367,51 +376,63 @@ class Window(Frame):
         self.configure(background=back)
 
         # create button, link it to clickExitButton()
-        runButton = Button(self, text="Run", font=appHighlightFont, command=self.run, bg='green', fg='white')
+        runButton = Button(self, text="Run", font=appHighlightFont, command=self.runButton, bg='green', fg='white')
         runButton.place(x=0, y=0)
         
         # Parameter Labels
-        self.parameters = {
-                "Population (e.g. 100)": list(),
-                "Particule radius (e.g. 15)": list(),
-                "Height of the window (e.g. 400)": list(),
-                "Width of the window (e.g. 400)": list(),
-                "Transmission probability (e.g. 0.4)": list(),
-                "Hospital capacity (e.g. Population*0.1)": list(),
-                "Incubation period (e.g. 200)": list(),
-                "Protection (0: nobody, 1: doctors, 2: doctors and patients, 3: doctors and infected, 4: everybody)": list(),
-                "Protection efficiency (e.g. 0.8)": list(),
-                "House numbers (e.g. 10)": list(),
-                "House radius (e.g. 80)": list(),
-                "Quarantine (FALSE or TRUE)": list(),   
-                "Quarantine threshold (e.g. 3)": list()
-                }
-
-        for i,parameter in enumerate(self.parameters.keys()):
-            self.parameters[parameter].append(Label(self, text=parameter, font=appHighlightFont, bg=back, fg=charac))
-            self.parameters[parameter].append(Entry(self))
+        self.parameters = parameters
+        
+        # Create Entry Form And fill in parameters
+        # Store in Dictionary so changes can be retrieved
+        self.entryObjects = dict()
+        for i,par in enumerate(self.parameters.keys()):
+            # Extract Default valie
+            defaultTextForEntry = self.parameters[par]
             
-            self.parameters[parameter][0].place(x=150,y=30*(i+2))
-            self.parameters[parameter][1].place(x=0,y=30*(i+2))
+            # Generate and place label
+            textForLabel=par.replace("_"," ").lower()+" (Default: "+str(defaultTextForEntry)+ ")"
+            label = Label(self, text=textForLabel, font=appHighlightFont, bg=back, fg=charac)
+            label.place(x=150,y=30*(i+2))
             
+            # Generate and plac entry fields
+            entry = Entry(self)
+            entry.insert(0,defaultTextForEntry)
+            entry.place(x=0,y=30*(i+2))
+            self.entryObjects[par]=entry
+                    
+        # Launch and run the window
+        master.mainloop()
             
-    def run(self):
-        for par in self.parameters:
-            givenValue = self.parameters[par][1].get()
-            print(givenValue) #instead put them in a dictionnary and change float and boolean
-            #.get to take the value in the value
-        return ParticleSystem(d["POPULATION"])
+    def runButton(self):
+        d = self.retrieveParametersFromWindow()
+        try:
+            return ParticleSystem(d["POPULATION"], d)
+        except:
+            self.master.destroy()
+            pass
     
-root = Tk()
-app = Window(root)
-root.wm_title("Definition of the Parameters")
-root.geometry("1050x450")
-root.mainloop()
-
-
-
-
+    def retrieveParametersFromWindow(self):
+        parameters=dict()
+        for par in self.entryObjects.keys():
+            key = par
+            entry = self.entryObjects[key]
+            valueRaw = entry.get()
+            if key == "QUARANTINE":
+                if valueRaw == '0' or valueRaw.lower()=="false":
+                    value = False
+                else:
+                    value = True
+            elif key in ["TRANSMISSION_PROBABILITY", 
+                         "HOSPITAL_CAPACITY", 
+                         "PROTECTION_EFFICIENCY"]:
+                value = float(valueRaw)
+            else:
+                value = int(valueRaw)
+            parameters[key]=value
+        return parameters
+    
+app = Window(Tk(),d)
 
 if __name__ == "__main__":
-    #sys = ParticleSystem(POPULATION)
+    #app = Window(Tk(),d)
     pass
