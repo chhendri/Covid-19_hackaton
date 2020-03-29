@@ -1,6 +1,6 @@
 """Source:     https://github.com/csamuelsm/covid19-simulations/blob/master/corona.pde   """
 
-
+# IMPORTS ----------------------------------
 import random
 from math import sqrt, cos, sin, atan2, degrees, radians
 import turtle as t
@@ -11,36 +11,64 @@ from tkinter import font
 
 
 d = dict(
-        POPULATION = 100,
-        PARTICLE_RADIUS = 15,
-        # size of the screen
-        HEIGTH = 400,
-        WIDTH = 400,
-        TRANSMISSION_PROBABILITY = 0.4,  # Probability of transmission when collision
-        HOSPITAL_CAPACITY = 100*0.1,  # Number of people that can be healed in the hospital at the same time
-        INCUBATION_PERIOD = 200,
-        PROTECTION = 3,  # 0: nobody, 1: doctors, 2: doctors and patients, 3: doctors and infected, 4: everybody
-        PROTECTION_EFFICIENCY = 0.8,  # if protected, TRANSMISSION_PROBABILITY is multiplied by (1-PROTECTION_EFFICIENCY)
-        HOUSE_NUMBER = 10,
-        HOUSE_RADIUS = 80,
-        QUARANTINE = False,
-        QUARANTINE_THRESHOLD = 3)  # number of sick people required to start quarantine
+        POPULATION = 100
+        PARTICLE_RADIUS = 12
+        HEIGTH = 400
+        WIDTH = 400
+        TRANSMISSION_PROBABILITY = 0.4
+        HOSPITAL_CAPACITY = POPULATION*0.1
+        HOSPITAL_RADIUS = 100
+        INCUBATION_PERIOD = 200
+        PROTECTION = 3  # 0: nobody, 1: doctors, 2: doctors and patients, 3: doctors and infected, 4: everybody
+        PROTECTION_EFFICIENCY = 0.8
+        HOUSE_NUMBER = 25
+        HOUSE_RADIUS = 40
+        QUARANTINE = False
+        QUARANTINE_THRESHOLD = 1
+        AGE_THRESHOLD_ELDER = 65 # Threshold to be considered as elder)  # number of sick people required to start quarantine
+)
 
+# GLOBAL FUNCTIONS -------------------------
 def dist(x1, y1, x2=0, y2=0):
     return sqrt((x1-x2) ** 2 + (y1-y2) ** 2)
 
 
+# CLASSES ----------------------------------
 class ParticleSystem(object):
     def __init__(self, pop_size, d):
         self.quarantine = d["QUARANTINE"]  # is quarantine set or not ?
         self.quarantine_start = 0  # to remember when the quarantine will (or not) start
-        self.hospital = Hospital(capacity=d["HOSPITAL_CAPACITY"], radius=200)
+        self.hospital = Hospital(capacity=d["HOSPITAL_CAPACITY"], radius=d["HOSPITAL_RADIUS"])
+        self.days = 0
+        self.hours = 0
+        self.minutes = 0
+        self.seconds = 0
 
         self.lst_houses = []
+
         # House are added in a circle around the position (0, 0)
-        for i in range(d["HOUSE_NUMBER"]):
-            self.lst_houses.append(House(pos=((self.hospital.radius+d["HOUSE_RADIUS"]+20)*cos(radians(360*i/d["HOUSE_NUMBER"])),
-                                              (self.hospital.radius+d["HOUSE_RADIUS"]+20)*sin(radians(360*i/d["HOUSE_NUMBER"])))))
+        for i in range(HOUSE_NUMBER):
+            can_add_house = False
+
+            while not can_add_house:
+                if len(self.lst_houses) == 0:
+                    can_add_house = True
+
+                house_position = (
+                    (self.hospital.radius + d['HOUSE_RADIUS'] + random.random() * 150) * cos(radians(360 * random.random())),
+                    (self.hospital.radius + d['HOUSE_RADIUS'] + random.random() * 150) * sin(radians(360 * random.random()))
+                )
+                for house in self.lst_houses:
+                    if dist(*house_position, *self.hospital.pos) > d['HOSPITAL_RADIUS'] + d['HOUSE_RADIUS'] + 5:
+                        if dist(*house_position, *house.pos) > d['HOUSE_RADIUS']*2 + 5:
+                            can_add_house = True
+                        else:
+                            can_add_house = False
+                            break
+                    else:
+                        break
+
+            self.lst_houses.append(House(pos=house_position))
 
         # the first particle is infected and is 20 years old
         #Houses are assigned randomly
@@ -53,7 +81,7 @@ class ParticleSystem(object):
                 self.lst_particles.append(Particle(house=random.choice(self.lst_houses)))
 
         # stats to draw the graph at the end
-        self.stats = {"healthy": [], "infected": [], "cured": [], "sick": [], "dead": []}
+        self.stats = {"healthy": {}, "infected": {}, "cured": {}, "sick": {}, "dead": {}}
         t.tracer(0, 0)
         t.ht()
         self.run(d)
@@ -62,6 +90,7 @@ class ParticleSystem(object):
     def run(self, d):
         infected = 1
         while infected > 0:
+            self.compute_time()
             healthy, infected, sick, cured, dead = 0, 0, 0, 0, 0
             self.hospital.patients = sum([part.hospital for part in self.lst_particles])
 
@@ -95,12 +124,22 @@ class ParticleSystem(object):
                 if part1.is_sick():
                     if dist(*part1.pos) > self.hospital.radius:
                         # if hospitalised and outside, or need to be, go to the hospital
-                        if part1.hospital or self.hospital.capacity > self.hospital.patients:
+                        if part1.hospital:
                             part1.dir = (degrees(atan2(part1.pos[1], part1.pos[0]))+180) % 360
+                            # if he finally joined the hospital, update the hospital state
                             self.hospital.patients += 1
-                        # if he finally joined the hospital, update the hospital state
-                    elif not part1.hospital and self.hospital.capacity > self.hospital.patients:
-                        part1.hospital = True
+                    if not part1.hospital and self.hospital.capacity > self.hospital.patients:
+                        # Condition to prioritize elder people
+                        # Explanation : if the number of infected is above the hospital capacity,
+                        # we keep 20% of the capacity reserved for elder people
+                        if infected >= self.hospital.capacity:
+                            if self.hospital.patients + int(self.hospital.capacity * 0.2) == self.hospital.capacity:
+                                if part1.age >= AGE_THRESHOLD_ELDER:
+                                    print('Elder guy prioritized')
+                                    part1.hospital = True
+                        else:
+                            # Normal situation
+                            part1.hospital = True
                 # People are not allowed to go in the hospital unless :
                 #  - there is quarantine so they can travel easier to their house
                 #  - he's sick
@@ -126,11 +165,11 @@ class ParticleSystem(object):
                 healthy = len(self.lst_particles) - (infected+cured+dead)
 
             # Append stats
-            self.stats["healthy"].append(healthy)
-            self.stats["infected"].append(infected)
-            self.stats["sick"].append(sick)
-            self.stats["cured"].append(cured)
-            self.stats["dead"].append(dead)
+            self.stats["healthy"][self.hours] = healthy
+            self.stats["infected"][self.hours] = infected
+            self.stats["sick"][self.hours] = sick
+            self.stats["cured"][self.hours] = cured
+            self.stats["dead"][self.hours] = dead
 
             # if quarantine criteria is reached, set up th quarantine (and save the start time)
             if not self.quarantine and sick >= d["QUARANTINE_THRESHOLD"]:
@@ -142,13 +181,24 @@ class ParticleSystem(object):
 
         # print the stats and show the graphes
         self.stats = pd.DataFrame(self.stats)
-        print(self.stats)
+        #print(self.stats)
         self.stats.loc[:, ["healthy", "infected", "cured", "dead"]].plot.area()
         plt.axvline(self.quarantine_start, color="black")
+        plt.xlabel('Time (hours)')
+        plt.ylabel('Population')
         self.stats.loc[:, ["sick"]].plot.area()
         plt.axvline(self.quarantine_start, color="black")
         plt.axhline(d["HOSPITAL_CAPACITY"], color="black")
+        plt.legend()
+        plt.xlabel('time (hours)')
+        plt.ylabel('Population')
         plt.show()
+
+    def compute_time(self):
+        self.hours = int(self.minutes/60)
+        self.days = int(self.hours/24)
+
+        self.minutes += 120
 
     def draw(self,d):
         # begin to clear turtle
@@ -184,6 +234,14 @@ class ParticleSystem(object):
             t.color(part.color)
             t.dot(d["PARTICLE_RADIUS"])
 
+        t.up()
+        t.color('black')
+        t.goto(-WIDTH / 1.4, HEIGTH / 1.5)
+        t.down()
+        t.write("Time : %s days, %s hours" % (self.days, self.hours), align='left',
+                font=("Arial", 20, "normal"))
+        t.up()
+
         # update the screen because I've disabled the auto update (it speeds up the drawing)
         t.update()
 
@@ -206,8 +264,11 @@ class House(object):
         t.goto(self.pos[0], self.pos[1]-self.radius)
         t.seth(0)
         t.color("black")
+        t.fillcolor("#97c1de")
         t.down()
+        t.begin_fill()
         t.circle(self.radius)
+        t.end_fill()
 
 
 class Hospital(object):
@@ -221,9 +282,41 @@ class Hospital(object):
         t.up()
         t.goto(0, -self.radius)
         t.seth(0)
-        t.color("red")
+        t.color("#cc4141")
+        t.fillcolor("#e85d5d")
         t.down()
+        t.begin_fill()
         t.circle(self.radius)
+        t.end_fill()
+        self.draw_H()
+
+    def draw_H(self):
+        height = self.radius/3
+        t.up()
+        t.goto(-height/2, 0)
+        t.seth(90)
+        t.color("#999090")
+        t.fillcolor("white")
+        t.down()
+        t.begin_fill()
+
+        for i in range(2):
+            t.forward(height / 2)
+            t.right(90)
+            t.forward(height/3)
+            t.right(90)
+            t.forward(height/3)
+            t.left(90)
+            t.forward(height/3)
+            t.left(90)
+            t.forward(height/3)
+            t.right(90)
+            t.forward(height/3)
+            t.right(90)
+            t.forward(height/2)
+        t.end_fill()
+
+
 
 
 class Particle(object):
@@ -242,7 +335,7 @@ class Particle(object):
         self.pos = (random.randint(x_h-d["HOUSE_RADIUS"], x_h+d["HOUSE_RADIUS"]),
                     random.randint(y_h-d["HOUSE_RADIUS"], y_h+d["HOUSE_RADIUS"]))
         self.dir = random.randint(0, 360)
-        self.velocity = random.random()*2+3  # random speed between 3 and 5
+        self.velocity = random.random()*2+5  # random speed between 3 and 5
         self.color = ""
         self.set_color()
         self.protection = 0  # 0 is not protected, 1 is protected
