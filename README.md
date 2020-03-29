@@ -24,6 +24,22 @@ Part of the population is made up of doctors. Doctors can freely go to hospitals
 
 ## Workflow
 
+In order to use this program, you will need Python3 and the following libraries:
+* random (default library of python)
+* math (default library of python)
+* turtle
+* pandas
+* matplotlib
+* tkinter
+
+Those packages can be installed running the following command (if you already have python installed, directly go to the second command):
+```
+sudo apt install python3-tk
+sudo apt-get install pandas tkinter
+python3 -m pip install pip
+python3 -m pip install matplotlib pandas
+```
+
 You can run the model by simply using the following command:
 ```
 python3 main.py
@@ -35,7 +51,7 @@ This will first open a GUI displaying the different parameters of the model. The
   <img src="Documents/GUI.png" alt="Graph example"/>
 </p>
 
-After pressing the `RUN` button, the model starts to display dots which represent the movement of the population with houses (small circles) and a hospital (central circle with a H).
+After pressing the `RUN` button, the model starts to display dots which represent the movement of the population with houses (small circles) and a hospital (central circle with a H). The black dots represent healthy before having any contact with the virus. The red dots are infected people. They can either turn into white non-motile dots (dead) or green motile dots (cured). Once in a hospital, a red dot cannot escape it unless it is a doctor or gets cured. If the hospital carrying capacity is reached, new red dots cannot enter it anymore.
 
 <p align="center">
   <img src="Documents/model.png" alt="Graph example"/>
