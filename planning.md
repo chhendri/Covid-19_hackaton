@@ -28,6 +28,7 @@ Also psychologically pleasing that done group is growing.
 # Doing
 * Write introduction for the README.md (Charlotte)
 * Prepare the 2 minutes presentation for Monday (Chris)
+* Coding stuff (Delanoe and Pierrot)
 
 # Done
 * Code is uploaded :)
