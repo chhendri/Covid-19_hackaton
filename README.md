@@ -71,6 +71,9 @@ The second one shows the number of new infected cases through time. This one all
   <img src="Documents/Figure_2.png" alt="Graph example"/>
 </p>
 
+Watch our video for a preview on the model:
+<iframe width="1905" height="839" src="https://www.youtube.com/embed/qzPgnL_uV3I" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
 ## Files
 
 * main.py --> model
