@@ -10,7 +10,7 @@
 *  https://www.supinfo.com/articles/single/4777-pymunk-moteur-physique-2d-vos-programmes-python
 	- Simulations in Python
 
-# Simulation Concept (Estaban)
+# Simulation Concept (Esteban)
 * From the original simulation method
 	- Random walks
 	- Independence between spheres
