@@ -72,9 +72,7 @@ The second one shows the number of new infected cases through time. This one all
 </p>
 
 Watch our video for a preview on the model:
-<iframe 
-src="http://www.youtube.com/watch?v=qzPgnL_uV3I">
-</iframe>
+<iframe width="420" height="315" src="http://www.youtube.com/watch?v=qzPgnL_uV3I"> </iframe>
 
 ## Files
 
