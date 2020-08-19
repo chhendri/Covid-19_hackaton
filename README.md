@@ -1,4 +1,4 @@
-# Covid-19_hackaton &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [<img src="Documents/Red_Dots_Chili_Peppers.png" width="80" height="80" alt="Graph example"/>](https://chhendri.github.io/)
+# Covid-19_hackaton &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [<img src="Documents/Red_Dots_Chili_Peppers.png" width="200" height="200" alt="Graph example"/>](https://chhendri.github.io/)
 
 
 ## Introduction
